@@ -70,7 +70,7 @@ This includes:
  - predict masks
  - output a info dictionary with box, center location and size
 
-Please refer to the examples in the [UpdatedTutorial.ipynb](./src/notebooks/UpdatedTutorial.ipynb) (open in [colab](https://colab.research.google.com/github/kumarlab-compomics/MicroNuclei_Detection/tree/main/src/notebooks/UpdatedTutorial.ipynb))
+Please refer to the examples in the [UpdatedTutorial.ipynb](./src/notebooks/UpdatedTutorial.ipynb) (open in [colab](https://colab.research.google.com/github/kumarlab-compomics/MicroNuclei_Detection/blob/main/src/notebooks/UpdatedTutorial.ipynb))
 
 ### **Run the main python script.** 
 Automated pipeline to process images. 
@@ -191,6 +191,7 @@ from mn_segmentation.lib.image_encode import mask2rle, rle_to_mask
 rle = mask2rle(mask)
 mask = rle_to_mask(rle,original_height,original_width)
 ```
+
 
 
 

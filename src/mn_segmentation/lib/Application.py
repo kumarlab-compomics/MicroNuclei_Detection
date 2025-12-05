@@ -207,7 +207,10 @@ class Application:
         pred_boxes,_,_ = self._post_process(pred, self.conf)
 
         if self.resolveApop:
-          mn_cnt += cluster.resolveApop(pred_boxes)
+          cluster_cnt = cluster.resolveApop(pred_boxes)
+          # update mn_cnt if there are at least one pred box in the current patch
+          if not isinstance(cluster_cnt, list):
+            mn_cnt += cluster_cnt
         else:
           mn_cnt += len(pred_boxes)
     return mn_cnt
@@ -238,33 +241,35 @@ class Application:
         pred = self._predict(image)
 
         pred_boxes, pred_masks, pred_scores= self._post_process(pred, self.conf)
-
-        # add apop check feature
-        if self.resolveApop:
-          # create a new list from non apop index list 
-          index = cluster.resolveApopIndex(pred_boxes, thresh=self.apop_cnt)
-          pred_boxes, pred_masks, pred_scores = pred_boxes[index], pred_masks[index], pred_scores[index]
-
-        pred_boxes[:, [0,2]] += cur_x
-        pred_boxes[:, [1,3]] += cur_y
-        area = pred_masks.sum(1).sum(1).sum(1)
-        # print(area.shape)
         
-        output["bbox"] += pred_boxes.cpu().numpy().tolist()
-        output["coord"] += cluster.boxToCenters(pred_boxes).tolist()
-        output["area"] += area.cpu().numpy().tolist()
-        output["score"] += pred_scores.cpu().numpy().tolist()
+        # update output if there are at least one pred box in the current patch
+        if len(pred_boxes) > 0:
+          # add apop check feature
+          if self.resolveApop:
+            # create a new list from non apop index list 
+            index = cluster.resolveApopIndex(pred_boxes, thresh=self.apop_cnt)
+            pred_boxes, pred_masks, pred_scores = pred_boxes[index], pred_masks[index], pred_scores[index]
 
-        pred_masks = pred_masks.cpu().type(torch.float32).numpy().squeeze(1)
-        for mask_i in range(pred_masks.shape[0]):
-          # Create an empty array of the same size as the image to hold the masks
-          output_mask = np.zeros((height, width), dtype=np.uint8)
+          pred_boxes[:, [0,2]] += cur_x
+          pred_boxes[:, [1,3]] += cur_y
+          area = pred_masks.sum(1).sum(1).sum(1)
+          # print(area.shape)
+          
+          output["bbox"] += pred_boxes.cpu().numpy().tolist()
+          output["coord"] += cluster.boxToCenters(pred_boxes).tolist()
+          output["area"] += area.cpu().numpy().tolist()
+          output["score"] += pred_scores.cpu().numpy().tolist()
+          
+          pred_masks = pred_masks.cpu().type(torch.float32).numpy().squeeze(1)
+          for mask_i in range(pred_masks.shape[0]):
+            # Create an empty array of the same size as the image to hold the masks
+            output_mask = np.zeros((height, width), dtype=np.uint8)
 
-          m = (pred_masks[mask_i] > self.conf)[:height-cur_y, :width-cur_x]
-          output_mask[cur_y: cur_y+wnd_sz, cur_x: cur_x+wnd_sz][m] = 1
+            m = (pred_masks[mask_i] > self.conf)[:height-cur_y, :width-cur_x]
+            output_mask[cur_y: cur_y+wnd_sz, cur_x: cur_x+wnd_sz][m] = 1
 
-          rle = mask2rle((output_mask>0).astype(int))
-          output["mask"].append(rle)
+            rle = mask2rle((output_mask>0).astype(int))
+            output["mask"].append(rle)
 
     return output
   

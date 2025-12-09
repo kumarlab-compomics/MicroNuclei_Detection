@@ -110,9 +110,9 @@ def get_image_info(image_path, nuc_model, mn_model, mode="ALL",mask=None):
     image_name = image_path.split("/")[-1]
 
     mn_info = get_mn_info(image_path, mn_model) if mode=="ALL" or mode=="MN" else None
-    if mn_info:
+    if mn_info and len(mn_info["area"]) > 0 :
        # set the threshhold for nuclei size as the largest micronuclei, at least 100
-       nuc_thresh = max(100, max(mn_info["area"]), default=100)
+       nuc_thresh = max(100, max(mn_info["area"]))
     else:
        nuc_thresh = 100
 

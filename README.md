@@ -22,6 +22,7 @@ The **MicroNucML** repository provides a comprehensive end-to-end pipeline for t
 
 ## 🔥 News
 
+- [2026/09] [MicroNucML publication ]( https://www.cell.com/cell-reports-methods/fulltext/S2667-2375(26)00274-2) is released.
 - [2026/01] [MN Ground truth dataset]( https://data.mendeley.com/datasets/hrjn4dy6z9/1) is released.
 - [2025/09] [MicroNucML preprint]( https://www.biorxiv.org/content/10.1101/2025.09.20.677550v1) is released.
 - [2025/06] MicroNuclei Detection v1.0 released.
